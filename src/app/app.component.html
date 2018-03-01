@@ -1,0 +1,87 @@
+<div class="page">
+<!-- Requires 'bootstrap'. From https://getbootstrap.com/docs/4.0/components/dropdowns/  -->
+
+<nav class="navbar navbar-toggle-sm navbar-light bg-faded">
+      <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>  
+
+  <a class="navbar-brand" href="#">CPAccount</a>
+  <div class="collapse navbar-collapse" id="navbarNavDropdown">
+    <ul class="navbar-nav">
+      <li class="nav-item" *ngIf="transactions">
+        <a class="nav-link" href="#" data-toggle="modal" data-target="#newtxnModal">Add Transaction</a>
+      </li>
+      
+      <li class="nav-item dropdown">
+        <a class="nav-link active dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Accounts
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+          <a *ngFor="let a of accounts" (click)="getTransactions(a)" class="dropdown-item" href="#">{{a.name}}</a>
+        </div>
+      </li>
+
+    </ul>
+  </div>
+</nav>
+
+
+<div class="transactions" *ngIf="transactions">
+  <table>
+    <tr *ngFor="let txn of transactions"><td>{{txn.date}}</td><td>{{txn.comment}}</td><td>{{txn.amount}}</td></tr>
+  </table>
+</div>
+
+<div class="newentmodal"  *ngIf="transactions">
+  <!-- Modal -->
+  <div class="modal fade" id="newtxnModal" tabindex="-1" role="dialog" aria-labelledby="newtxnLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="newtxnLabel">New Transaction for {{activeaccount.name}}</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+
+          <form #newtxnform="ngForm" (ngSubmit)="addtransaction(newtxnform)">
+            <div class="input-group input-group-sm mb-3">
+              <div class="input-group-prepend">
+                <span class="input-group-text" id="lbdate">Transaction date</span>
+              </div>
+              <input ngModel name="txDate" id="txDate" type="text" class="form-control" placeholder="DD/MM/YYYY" aria-label="DD/MM/YYYY" aria-describedby="lbdate">
+            </div>
+            <div class="input-group input-group-sm mb-3">
+              <div class="input-group-prepend">
+                <span class="input-group-text" id="lbtype">Type</span>
+              </div>
+              <input ngModel name="txType" id="txType" type="text" class="form-control" placeholder="eg. BC, PPAL" aria-label="eg. BC, PPAL" aria-describedby="lbtype">
+            </div>
+            <div class="input-group input-group-sm mb-3">
+              <div class="input-group-prepend">
+                <span class="input-group-text" id="lbcomment">Comment</span>
+              </div>
+              <input ngModel name="txComment" id="txComment" type="text" class="form-control" placeholder="" aria-label=""  aria-describedby="lbcomment">
+            </div>
+            <div class="input-group input-group-sm mb-3">
+              <div class="input-group-prepend">
+                <span class="input-group-text" id="lbamount">Amount Debited</span>
+              </div>
+              <input ngModel name="txAmount" id="txAmount" type="text" class="form-control" placeholder="-ve number for Credit" aria-label="-ve number for Credit"  aria-describedby="lbamount">
+            </div>          
+          <button type="button" class="btn btn-secondary" data-dismiss="modal" #closeBtn>Close</button>
+          <button type="submit" class="btn btn-default btn-primary">Save</button>            
+        </form>
+
+        </div> <!-- modal-body -->
+        <div class="modal-footer">
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+</div>
