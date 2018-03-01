@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { NgForm, NgModel } from '@angular/forms';
 import { DatePipe } from '@angular/common';
 import {ViewChild, ElementRef} from '@angular/core';
-
+import {environment} from '../environments/environment';
 
 import {AccountService} from '../shared/service/account.service';
 import {AccountItem} from '../shared/model/accountitem.model';
@@ -21,11 +21,12 @@ export class AppComponent implements OnInit {
   private activeaccount : AccountItem;
   public submitted : boolean;
   public defaultdate : string;
+  envName : string;
   txDate : string;
   constructor(private accountService : AccountService, private datePipe: DatePipe) {
     let d : Date = new Date();
     this.txDate = this.datePipe.transform(d, 'dd/MM/yyyy');
-    
+    this.envName = " (" + environment.envName + ")";
   }
 
   ngOnInit() {

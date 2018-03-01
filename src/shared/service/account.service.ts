@@ -2,20 +2,21 @@ import {Injectable} from '@angular/core';
 import {Http, Response} from "@angular/http";
 import {Observable} from "rxjs";
 import 'rxjs/add/operator/map';
-
+import {environment} from '../../environments/environment';
 import { AccountItem } from '../model/accountitem.model';
 import { TransactionItem } from '../model/transaction.model';
 
 @Injectable()
 export class AccountService 
 {
-    private serverhost : string = ""; //"http://minnie"; //"http://localhost:8080";
+    private serverhost : string; // = "http://minnie"; //""; //"http://minnie"; //"http://localhost:8080";
     private listaccsvc : string = "/accountAPI/listaccount.php";
     private listtxnsvc : string = "/accountAPI/listtransaction.php?accid=";
     private addtxnsvc : string = "/accountAPI/addtransaction.php";
     constructor(private http : Http)
     {
-
+        this.serverhost = environment.accountapi_host;
+        console.log("Account API server host: " + this.serverhost);
     }    
 
     getAccounts() : Observable<AccountItem[]>
@@ -23,6 +24,7 @@ export class AccountService
         let url : string;
         url = this.serverhost + this.listaccsvc;
         // The account items are returned wrapped in an array named accounts
+        console.log("getAccount API URL: " + url);
         return this.http.get(url).map(res => res.json().accounts);    
     }
 
