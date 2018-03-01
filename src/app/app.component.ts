@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { NgForm } from '@angular/forms';
-
+import { NgForm, NgModel } from '@angular/forms';
+import { DatePipe } from '@angular/common';
 import {ViewChild, ElementRef} from '@angular/core';
 
 
@@ -20,9 +20,12 @@ export class AppComponent implements OnInit {
   private transactions : TransactionItem[];
   private activeaccount : AccountItem;
   public submitted : boolean;
-  
-  constructor(private accountService : AccountService) {
-
+  public defaultdate : string;
+  txDate : string;
+  constructor(private accountService : AccountService, private datePipe: DatePipe) {
+    let d : Date = new Date();
+    this.txDate = this.datePipe.transform(d, 'dd/MM/yyyy');
+    
   }
 
   ngOnInit() {
