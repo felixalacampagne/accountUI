@@ -9,7 +9,7 @@ import { TransactionItem } from '../model/transaction.model';
 @Injectable()
 export class AccountService 
 {
-    private serverhost : string = "http://minnie"; //"http://localhost:8080";
+    private serverhost : string = ""; //"http://minnie"; //"http://localhost:8080";
     private listaccsvc : string = "/accountAPI/listaccount.php";
     private listtxnsvc : string = "/accountAPI/listtransaction.php?accid=";
     private addtxnsvc : string = "/accountAPI/addtransaction.php";
