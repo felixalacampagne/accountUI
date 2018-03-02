@@ -18,7 +18,7 @@ export class AppComponent implements OnInit {
   title = 'app';
   private accounts : AccountItem[];
   private transactions : TransactionItem[];
-  private activeaccount : AccountItem;
+  private activeaccount : AccountItem = null;
   public submitted : boolean;
   public defaultdate : string;
   envName : string;
@@ -98,6 +98,11 @@ console.log("AppComponent.addTransactionToDB: Starting");
 
 addtransaction(form : NgForm)
 {
+  if(this.activeaccount == null)
+  {
+    console.log("Account is not set, unable to add transaction.");
+    return;
+  }
   //txDate: "qwerrty", txType: "qwer345", txComment: "qwer35435", txAmount: "123"
   console.log("Date: " + form.value.txDate);
   console.log("Type: " + form.value.txType);
@@ -123,8 +128,10 @@ addtransaction(form : NgForm)
   // hard to do the most simple things with, I thought it was supposed to make
   // it easier not a billion times harder!!!
 
+  // This doesn't update the displayed list
+  this.getTransactions(this.activeaccount);
   this.closeBtn.nativeElement.click();
-  
+
 }
 
 }

@@ -1,26 +1,30 @@
 
 <!-- Requires 'bootstrap'. From https://getbootstrap.com/docs/4.0/components/dropdowns/  -->
+
+<!-- NB  "flex-nowrap flex-row" can be used to prevent the 'vertical' navbar from appearing on phone display, but I
+     I don't think it looks any better
+ -->
 <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
     <div class="mr-auto">
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown">
             <span class="navbar-toggler-icon"></span>
         </button>      
     </div>
+    
     <div class="navbar-collapse collapse" id="navbarNavDropdown">
-
         <ul class="navbar-nav mr-auto">
             <li class="nav-item active dropdown">
               <a class="nav-link dropdown-toggle" id="navbarDropdownMenuLink" data-toggle="dropdown" href="#">Accounts</a>
-              <ul class="dropdown-menu">
+              <ul class="dropdown-menu" role="menu">
                 <li><a *ngFor="let a of accounts" (click)="getTransactions(a)" class="dropdown-item" href="#">{{a.name}}</a></li>
               </ul>
             </li>
             <li class="nav-item" *ngIf="transactions">
                 <a class="nav-link" data-toggle="modal" data-target="#newtxnModal" href="#">Add Transaction</a>
             </li>
-
         </ul>
     </div>
+
     <div class="ml-auto order-last">
         <a class="navbar-brand" href="#">CPAccount{{envName}}</a>
     </div>
