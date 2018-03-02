@@ -6,5 +6,5 @@
 export const environment = {
   production: false,
   accountapi_host: "http://minnie",
-  envName: 'home'
+  envName: ' (home)'
 };

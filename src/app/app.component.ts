@@ -26,7 +26,7 @@ export class AppComponent implements OnInit {
   constructor(private accountService : AccountService, private datePipe: DatePipe) {
     let d : Date = new Date();
     this.txDate = this.datePipe.transform(d, 'dd/MM/yyyy');
-    this.envName = " (" + environment.envName + ")";
+    this.envName = environment.envName;
   }
 
   ngOnInit() {
