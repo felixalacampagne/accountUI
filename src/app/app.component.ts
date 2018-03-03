@@ -70,9 +70,9 @@ console.log("AppComponent.getTransactions: Starting");
               }
             },
        err=>{
-            console.log("AppComponent.ngOnInit: An error occured during getTransactions subscribe" + err);
+            console.log("AppComponent.getTransactions: An error occured during getTransactions subscribe" + err);
             } ,
-        ()=>{console.log("AppComponent.ngOnInit: getTransactions loading completed");}
+        ()=>{console.log("AppComponent.getTransactions: getTransactions loading completed");}
     );
 
     console.log("AppComponent.getTransactions:Finished");
@@ -130,6 +130,12 @@ addtransaction(form : NgForm)
 
   // This doesn't update the displayed list
   this.getTransactions(this.activeaccount);
+
+  // Having this after the getTransactions caused the list to update when I ran it
+  // on the VM, but it doesn't when I run it in the home environment :-(
+  // Also the popup help says that using nativeElement is not a good thing as it
+  // ties the 'model' to the page - tell me about it, but what other choice is there
+  // to make the forking modal go away??
   this.closeBtn.nativeElement.click();
 
 }
