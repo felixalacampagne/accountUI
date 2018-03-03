@@ -136,6 +136,8 @@ addtransaction(form : NgForm)
   // Also the popup help says that using nativeElement is not a good thing as it
   // ties the 'model' to the page - tell me about it, but what other choice is there
   // to make the forking modal go away??
+  // Fork Me! after I made the comment and saved the page the list updated 
+  // after I added an entry - I guess it is a timing thing.
   this.closeBtn.nativeElement.click();
 
 }
