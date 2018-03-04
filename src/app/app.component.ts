@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { NgForm, NgModel } from '@angular/forms';
 import { DatePipe } from '@angular/common';
 import {ViewChild, ElementRef} from '@angular/core';
@@ -23,7 +23,9 @@ export class AppComponent implements OnInit {
   public defaultdate : string;
   envName : string;
   txDate : string;
-  constructor(private accountService : AccountService, private datePipe: DatePipe) {
+  constructor(private accountService : AccountService, 
+    private cd: ChangeDetectorRef,
+    private datePipe: DatePipe) {
     let d : Date = new Date();
     this.txDate = this.datePipe.transform(d, 'dd/MM/yyyy');
     this.envName = environment.envName;
@@ -67,6 +69,11 @@ console.log("AppComponent.getTransactions: Starting");
               else
               {
                 console.log("AppComponent.getTransactions: transactions contains " + this.transactions.length + " items.");
+                let t : TransactionItem=this.transactions[this.transactions.length-1]
+                console.log("AppComponent.getTransactions: last transaction " + t.comment + ", " +t.amount);
+                // Fingers crossed this causes an update of the displayed transaction list, which
+                // does not happen automatically when a new transaction is added
+                this.cd.markForCheck();
               }
             },
        err=>{
@@ -84,7 +91,9 @@ addTransactionToDB(txn : TransactionItem)
 console.log("AppComponent.addTransactionToDB: Starting");
     this.accountService.addTransaction(txn).subscribe(
        res=>{
-            console.log("AppComponent.addTransactionToDB: Response: " + res)
+            console.log("AppComponent.addTransactionToDB: Response: " + res);
+            // Must wait for add to complete before loading new transaction list
+            this.getTransactions(this.activeaccount);
             },
        err=>{
             console.log("AppComponent.addTransactionToDB: An error occured during getTransactions subscribe" + err);
@@ -127,19 +136,9 @@ addtransaction(form : NgForm)
   // anything which is even close to working - why the fork is this stuff so
   // hard to do the most simple things with, I thought it was supposed to make
   // it easier not a billion times harder!!!
-
-  // This doesn't update the displayed list
-  this.getTransactions(this.activeaccount);
-
-  // Having this after the getTransactions caused the list to update when I ran it
-  // on the VM, but it doesn't when I run it in the home environment :-(
-  // Also the popup help says that using nativeElement is not a good thing as it
-  // ties the 'model' to the page - tell me about it, but what other choice is there
-  // to make the forking modal go away??
-  // Fork Me! after I made the comment and saved the page the list updated 
-  // after I added an entry - I guess it is a timing thing.
+  
   this.closeBtn.nativeElement.click();
-
+  
 }
 
 }
