@@ -1,19 +1,25 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { NgForm, NgModel } from '@angular/forms';
 import { DatePipe } from '@angular/common';
-import {ViewChild, ElementRef} from '@angular/core';
+import {NgbModal, ModalDismissReasons, NgbModalRef} from '@ng-bootstrap/ng-bootstrap';
+import { NgbDatepickerConfig, NgbDateParserFormatter, NgbDateStruct } from '@ng-bootstrap/ng-bootstrap';
+
+
 import {environment} from '../environments/environment';
 
+import { mmddyyyNgbDateParserFormatter } from "../shared/datepickformatter"
 import {AccountService} from '../shared/service/account.service';
 import {AccountItem} from '../shared/model/accountitem.model';
 import {TransactionItem} from '../shared/model/transaction.model';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  styleUrls: ['./app.component.css'],
+  providers: [{provide: NgbDateParserFormatter, useClass: mmddyyyNgbDateParserFormatter}]
 })
 export class AppComponent implements OnInit {
-@ViewChild('closeBtn') closeBtn: ElementRef;
+
+modalReference: NgbModalRef;
 
   title = 'app';
   private accounts : AccountItem[];
@@ -22,14 +28,46 @@ export class AppComponent implements OnInit {
   public submitted : boolean;
   public defaultdate : string;
   envName : string;
-  txDate : string;
+  txDate : NgbDateStruct;
+  txType : string;
+  closeResult: string;
   constructor(private accountService : AccountService, 
     private cd: ChangeDetectorRef,
-    private datePipe: DatePipe) {
+    private datePipe: DatePipe,
+    private modalService: NgbModal) {
     let d : Date = new Date();
-    this.txDate = this.datePipe.transform(d, 'dd/MM/yyyy');
     this.envName = environment.envName;
+
+    // Default values for the add transaction form
+    this.txDate = {year: d.getFullYear(), month: d.getMonth()+1, day: d.getDate()};
+    // This is only necessary because the ngModel attribute breaks the selected behaviour of the option tag
+    this.txType = "BC";
+
   }
+
+  
+  open(content) {
+    //this.modalReference = this.modalService.open(content, {size:'sm'});
+    this.modalReference = this.modalService.open(content);
+    this.modalReference.result.then((result) => {
+      this.closeResult = `Closed with: ${result}`;
+    }, (reason) => {
+      this.closeResult = `Dismissed ${this.getDismissReason(reason)}`;
+    });
+  }
+
+  private getDismissReason(reason: any): string {
+    if (reason === ModalDismissReasons.ESC) {
+      return 'by pressing ESC';
+    } else if (reason === ModalDismissReasons.BACKDROP_CLICK) {
+      return 'by clicking on a backdrop';
+    } else {
+      return  `with: ${reason}`;
+    }
+  }
+
+
+
 
   ngOnInit() {
     console.log("AppComponent.ngOnInit: Starting");
@@ -119,25 +157,21 @@ addtransaction(form : NgForm)
   console.log("Amount: " + form.value.txAmount);
   
   let newent : TransactionItem = new TransactionItem();
+  let d = new Date(form.value.txDate.year, form.value.txDate.month-1, form.value.txDate.day);
   newent.accid = this.activeaccount.id;
   newent.amount = form.value.txAmount;
   newent.comment = form.value.txComment;
-  newent.date = form.value.txDate;
+  newent.date = this.datePipe.transform(d, 'dd/MM/yyyy');
   newent.type = form.value.txType;
 
   this.addTransactionToDB(newent); 
 
-  // I've search for forking hours to figure out how to get the modal form dialog to
-  // go away after the submit event has been processed and there is nothing of 
-  // any use. You'd think it would be something that just happened but no
-  // there is really nothing forseen for processing a form in a modal and then
-  // dismissing the modal.
-  // This shirt with the "ViewChild" stuff is the closest I've come to finding
-  // anything which is even close to working - why the fork is this stuff so
-  // hard to do the most simple things with, I thought it was supposed to make
-  // it easier not a billion times harder!!!
-  
-  this.closeBtn.nativeElement.click();
+  // So ng-bootstrap doesn't close the modal when the submit button is used to perform
+  // form processing!!!!!
+  // Figured out that the close could be put in the click event of the button in addition to
+  // the addtransaction call so I dont have to bother with it here.
+  // NB. it only works if the close is put BEFORE the addtransaction!!!!!!
+  //this.modalReference.close('Closed from addTransaction');
   
 }
 

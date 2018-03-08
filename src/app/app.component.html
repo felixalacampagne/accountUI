@@ -5,25 +5,44 @@
      I don't think it looks any better
  -->
 <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
+  <!--
+    Can't see how nb-bootstrap is supposed to work for navbar dropdowns, missing a connection
+    between automatic toggling of the hamburger when the display width changes and the toggling
+    of the menu items. But don't really need this, I always need to pick an account and it's usually
+    to add a transaction, so having the buttons hidden by default is a waste of time.
     <div class="mr-auto">
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown">
+        <button class="navbar-toggler" type="button" (click)="isCollapsed = !isCollapsed"
+ data-toggle="collapse" data-target="#navbarNavDropdown">
             <span class="navbar-toggler-icon"></span>
         </button>      
     </div>
     
+    <div class="navbar-collapse collapse" id="navbarNavDropdown"  [ngbCollapse]="isCollapsed">
     <div class="navbar-collapse collapse" id="navbarNavDropdown">
+          <li class="nav-item">
+            <div ngbDropdown class="d-inline-block">
+              <button class="btn btn-sm btn-dark" id="btnAccounts" ngbDropdownToggle>Accounts</button>
+              <div ngbDropdownMenu aria-labelledby="btnAccounts">
+                <button *ngFor="let a of accounts" (click)="getTransactions(a)" class="dropdown-item">{{a.name}}</button>
+              </div>
+            </div>
+          </li>
+
+
+      -->
+      
         <ul class="navbar-nav mr-auto">
-            <li class="nav-item active dropdown">
-              <a class="nav-link dropdown-toggle" id="navbarDropdownMenuLink" data-toggle="dropdown" href="#">Accounts</a>
-              <ul class="dropdown-menu" role="menu">
-                <li><a *ngFor="let a of accounts" (click)="getTransactions(a)" class="dropdown-item" href="#">{{a.name}}</a></li>
-              </ul>
-            </li>
-            <li class="nav-item" *ngIf="transactions">
-                <a class="nav-link" data-toggle="modal" data-target="#newtxnModal" href="#">Add Transaction</a>
-            </li>
+          <li ngbDropdown class="nav-item d-inline-block">
+              <button class="btn btn-sm btn-dark" id="btnAccounts" ngbDropdownToggle>Accounts</button>
+              <div ngbDropdownMenu aria-labelledby="btnAccounts">
+                <button *ngFor="let a of accounts" (click)="getTransactions(a)" class="dropdown-item">{{a.name}}</button>
+              </div>
+          </li>
+          <li class="nav-item" *ngIf="transactions">
+              <button class="btn btn-sm btn-dark" (click)="open(ngnewentmodal)">Add Transaction</button>
+          </li>
         </ul>
-    </div>
+    <!-- /div  -->
 
     <div class="ml-auto order-last">
         <a class="navbar-brand" href="#">CPAccount{{envName}}</a>
@@ -44,55 +63,66 @@
   </table>
 </div>
 
-<div class="newentmodal"  *ngIf="transactions">
-  <!-- Modal -->
-  <div class="modal fade" id="newtxnModal" tabindex="-1" role="dialog" aria-labelledby="newtxnLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="newtxnLabel">New Transaction for {{activeaccount.name}}</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
+<ng-template #ngnewentmodal let-c="close" let-d="dismiss"> 
+  <div class="modal-header">
+    <h5 class="modal-title" id="newtxnLabel">New Transaction for {{activeaccount.name}}</h5>
+    <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
 
-          <form #newtxnform="ngForm" (ngSubmit)="addtransaction(newtxnform)">
-            <div class="input-group input-group-sm mb-3">
-              <div class="input-group-prepend">
-                <span class="input-group-text" id="lbdate">Transaction date</span>
-              </div>
-              <input [(ngModel)]="txDate" name="txDate" id="txDate" type="text" class="form-control" placeholder="DD/MM/YYYY">
-            </div>
-            <div class="input-group input-group-sm mb-3">
-              <div class="input-group-prepend">
-                <span class="input-group-text" id="lbtype">Type</span>
-              </div>
-              <input ngModel name="txType" id="txType" type="text" class="form-control" placeholder="eg. BC, PPAL" aria-label="eg. BC, PPAL" aria-describedby="lbtype">
-            </div>
-            <div class="input-group input-group-sm mb-3">
-              <div class="input-group-prepend">
-                <span class="input-group-text" id="lbcomment">Comment</span>
-              </div>
-              <input ngModel name="txComment" id="txComment" type="text" class="form-control" placeholder="" aria-label=""  aria-describedby="lbcomment">
-            </div>
-            <div class="input-group input-group-sm mb-3">
-              <div class="input-group-prepend">
-                <span class="input-group-text" id="lbamount">Amount Debited</span>
-              </div>
-              <input ngModel name="txAmount" id="txAmount" type="number" class="form-control" placeholder="-ve number for Credit" aria-label="-ve number for Credit"  aria-describedby="lbamount">
-            </div>          
-          <button type="button" class="btn btn-secondary" data-dismiss="modal" #closeBtn>Close</button>
-          <button type="submit" class="btn btn-default btn-primary">Save</button>            
-        </form>
+    <form #newtxnform="ngForm">
+      <div class="input-group input-group-sm mb-3">
+          <div class="input-group-prepend">
+            <span class="input-group-text" id="lbdate">Date</span>
+          </div>
 
-        </div> <!-- modal-body -->
-        <div class="modal-footer">
-
-        </div>
+        <!-- 
+          <input [(ngModel)]="txDate" name="txDate" id="txDate" type="text" class="form-control-date" placeholder="DD/MM/YYYY">
+          Below is an example using the ng-datepicker. I might work but it doesn't have an easy way
+             to configure the date format and for some reason it looses the current date initialisation, 
+             ie. it needs alot of work to understand how to get it to be useful
+      -->       
+          <input ngbDatepicker #dt="ngbDatepicker" [(ngModel)]="txDate" name="txDate" id="txDate" type="text" class="form-control-date" placeholder="DD/MM/YYYY">
+          <div class="input-group-append">
+            <button class="btn btn-outline-secondary" (click)="dt.toggle()" type="button">
+              <img src="assets/images/calendar-icon.svg" style="width: 1.2rem; height: 1rem; cursor: pointer;"/>
+            </button>
+          </div> 
 
       </div>
-    </div>
+      <div class="input-group input-group-sm mb-3">
+          <div class="input-group-prepend">
+            <span class="input-group-text" id="lbType">Type</span>
+          </div>
+          <select class="form-control-size" [(ngModel)]="txType" name="txType" id="txType">
+              <option>BC</option>
+              <option>ITFR</option>
+              <option>PPAL</option>
+              <option>CARD</option>
+          </select>
+      </div>
+
+      <div class="input-group input-group-sm mb-3">
+        <div class="input-group-prepend">
+          <span class="input-group-text" id="lbcomment">Comment</span>
+        </div>
+        <input ngModel name="txComment" id="txComment" type="text" class="form-control" placeholder="" aria-label=""  aria-describedby="lbcomment">
+      </div>
+
+      <div class="input-group input-group-sm mb-3">
+        <div class="input-group-prepend">
+          <span class="input-group-text" id="lbamount">Amount Debited</span>
+        </div>
+        <input ngModel name="txAmount" id="txAmount" type="number" class="form-control-name" placeholder="-ve number for Credit" aria-label="-ve number for Credit"  aria-describedby="lbamount">
+      </div>          
+  </form>
+
+  </div> <!-- modal-body -->
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" (click)="d()">Close</button>
+    <button type="button" class="btn btn-default btn-primary" (click)="c('close click pre-add');addtransaction(newtxnform);">Save</button>            
   </div>
-</div>
+  </ng-template>
 </div>
