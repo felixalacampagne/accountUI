@@ -22,8 +22,8 @@ export class AppComponent implements OnInit {
 modalReference: NgbModalRef;
 
   title = 'app';
-  private accounts : AccountItem[];
-  private transactions : TransactionItem[];
+  accounts : AccountItem[];
+  transactions : TransactionItem[];
   private activeaccount : AccountItem = null;
   public submitted : boolean;
   public defaultdate : string;
