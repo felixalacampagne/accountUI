@@ -57,6 +57,7 @@
               <option>INET</option>
               <option>PPAL</option>
               <option>CARD</option>
+              <option>QRMP</option>
           </select>
       </div>
 
@@ -64,16 +65,17 @@
         <div class="input-group-prepend">
           <span class="input-group-text" id="lbcomment">Comment</span>
         </div>
-        <input ngModel name="txComment" id="txComment" type="text" class="form-control form-control-sm" placeholder="" aria-label=""  aria-describedby="lbcomment">
+        <input [(ngModel)]="txComment" name="txComment" id="txComment" type="text" class="form-control form-control-sm" placeholder="" aria-label=""  aria-describedby="lbcomment">
       </div>
 
       <div class="input-group input-group-sm mb-3">
         <div class="input-group-prepend">
           <span class="input-group-text" id="lbamount">Amount Debited</span>
         </div>
-        <input ngModel name="txAmount" id="txAmount" type="number" class="form-control form-control-sm" placeholder="-ve number for Credit" aria-label="-ve number for Credit"  aria-describedby="lbamount">
+        <input [(ngModel)]="txAmount" name="txAmount" id="txAmount" type="number" class="form-control form-control-sm" placeholder="-ve number for Credit" aria-label="-ve number for Credit"  aria-describedby="lbamount">
       </div>          
     </form>
-    <button type="button" class="btn btn-default btn-primary" (click)="addtransaction(newtxnform);">Add new transaction</button>            
+    <button type="button" class="btn btn-default btn-primary" (click)="addtransaction();">Add new transaction</button>            
+    <button type="button" class="btn btn-default btn-primary" (click)="populateFromClipboard();">Fill From Clipboard</button>            
   </div>
 </div>

@@ -30,6 +30,8 @@ modalReference: NgbModalRef;
   envName : string;
   txDate : NgbDateStruct;
   txType : string;
+  txComment : string;
+  txAmount : string;
   closeResult: string;
   constructor(private accountService : AccountService, 
     private cd: ChangeDetectorRef,
@@ -132,6 +134,8 @@ console.log("AppComponent.addTransactionToDB: Starting");
             console.log("AppComponent.addTransactionToDB: Response: " + res);
             // Must wait for add to complete before loading new transaction list
             this.getTransactions(this.activeaccount);
+            // Reset amount to prevent double entry
+            this.txAmount = '';
             },
        err=>{
             console.log("AppComponent.addTransactionToDB: An error occured during getTransactions subscribe" + err);
@@ -143,36 +147,65 @@ console.log("AppComponent.addTransactionToDB: Starting");
 }
 
 
-addtransaction(form : NgForm)
+addtransaction()
 {
   if(this.activeaccount == null)
   {
     console.log("Account is not set, unable to add transaction.");
     return;
   }
-  //txDate: "qwerrty", txType: "qwer345", txComment: "qwer35435", txAmount: "123"
-  console.log("Date: " + form.value.txDate);
-  console.log("Type: " + form.value.txType);
-  console.log("Comment: " + form.value.txComment);
-  console.log("Amount: " + form.value.txAmount);
-  
+
   let newent : TransactionItem = new TransactionItem();
-  let d = new Date(form.value.txDate.year, form.value.txDate.month-1, form.value.txDate.day);
+  let d = new Date(this.txDate.year, this.txDate.month-1, this.txDate.day);
   newent.accid = this.activeaccount.id;
-  newent.amount = form.value.txAmount;
-  newent.comment = form.value.txComment;
+  newent.amount = this.txAmount;
+  newent.comment = this.txComment;
   newent.date = this.datePipe.transform(d, 'dd/MM/yyyy');
-  newent.type = form.value.txType;
+  newent.type = this.txType;
 
+  console.log("Date: " + newent.date);
+  console.log("Type: " + newent.type);
+  console.log("Comment: " + newent.comment);
+  console.log("Amount: " + newent.amount);  
   this.addTransactionToDB(newent); 
-
-  // So ng-bootstrap doesn't close the modal when the submit button is used to perform
-  // form processing!!!!!
-  // Figured out that the close could be put in the click event of the button in addition to
-  // the addtransaction call so I dont have to bother with it here.
-  // NB. it only works if the close is put BEFORE the addtransaction!!!!!!
-  //this.modalReference.close('Closed from addTransaction');
-  
 }
 
+populateFromClipboard()
+{
+  console.log("populateFromClipboard: entry");
+  let epc = this.readClipboard();
+  let txn : TransactionItem = this.parseEPC(epc);
+  this.txAmount = txn.amount;
+  this.txComment = txn.comment;
+  this.txType = txn.type;
+  console.log("populateFromClipboard: exit");
+
 }
+
+parseEPC(epc : string) : TransactionItem
+{
+let trans : TransactionItem = new TransactionItem();
+let lines : string[] = epc.split("\n");
+
+  if((lines[0] === 'BCD') && (lines[3] === 'SCT'))
+  {
+    // Name Comment (Account)
+    trans.comment = lines[5] + " " + lines[9] + lines[10] + " " + lines[6];
+    trans.amount = lines[7].substr(3);
+    trans.type = 'QRMP';
+  }
+  else
+  {
+    console.log("parseEPC: invalid epc string: " + epc);
+  }
+  return trans;
+}
+
+readClipboard() : string 
+{
+  // let clip : string = "BCD\n002\n1\nSCT\n\nNAME\nBE11222233334444\nEUR999.99\n\n\nStructured\nBeneToOrigIgnored\n";
+  let clip : string = "BCD\n002\n1\nSCT\n\nNAME\nBE11222233334444\nEUR999.99\n\nFreeFormat\n\nBeneToOrigIgnored\n";
+  return clip;
+}
+}
+
