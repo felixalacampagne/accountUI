@@ -7,7 +7,7 @@ import { NgbDatepickerConfig, NgbDateParserFormatter, NgbDateStruct } from '@ng-
 
 import {environment} from '../environments/environment';
 
-import { mmddyyyNgbDateParserFormatter } from "../shared/datepickformatter"
+import { mmddyyyNgbDateParserFormatter } from '../shared/datepickformatter';
 import {AccountService} from '../shared/service/account.service';
 import {AccountItem} from '../shared/model/accountitem.model';
 import {TransactionItem} from '../shared/model/transaction.model';
@@ -22,34 +22,34 @@ export class AppComponent implements OnInit {
 modalReference: NgbModalRef;
 
   title = 'app';
-  accounts : AccountItem[];
-  transactions : TransactionItem[];
-  private activeaccount : AccountItem = null;
-  public submitted : boolean;
-  public defaultdate : string;
-  envName : string;
-  txDate : NgbDateStruct;
-  txType : string;
-  txComment : string;
-  txAmount : string;
+  accounts: AccountItem[];
+  transactions: TransactionItem[];
+  private activeaccount: AccountItem = null;
+  public submitted: boolean;
+  public defaultdate: string;
+  envName: string;
+  txDate: NgbDateStruct;
+  txType: string;
+  txComment: string;
+  txAmount: string;
   closeResult: string;
-  constructor(private accountService : AccountService, 
+  constructor(private accountService: AccountService,
     private cd: ChangeDetectorRef,
     private datePipe: DatePipe,
     private modalService: NgbModal) {
-    let d : Date = new Date();
+    const d: Date = new Date();
     this.envName = environment.envName;
 
     // Default values for the add transaction form
-    this.txDate = {year: d.getFullYear(), month: d.getMonth()+1, day: d.getDate()};
+    this.txDate = {year: d.getFullYear(), month: d.getMonth() + 1, day: d.getDate()};
     // This is only necessary because the ngModel attribute breaks the selected behaviour of the option tag
-    this.txType = "BC";
+    this.txType = 'BC';
 
   }
 
-  
+
   open(content) {
-    //this.modalReference = this.modalService.open(content, {size:'sm'});
+    // this.modalReference = this.modalService.open(content, {size:'sm'});
     this.modalReference = this.modalService.open(content);
     this.modalReference.result.then((result) => {
       this.closeResult = `Closed with: ${result}`;
@@ -72,14 +72,14 @@ modalReference: NgbModalRef;
 
 
   ngOnInit() {
-    console.log("AppComponent.ngOnInit: Starting");
+    console.log('AppComponent.ngOnInit: Starting');
     this.accountService.getAccounts().subscribe(
-       res=>{
+       res => {
               this.accounts = res;
-              //debugger;
+              // debugger;
               if(!this.accounts)
               {
-                console.log("AppComponent.ngOnInit: variable is not initialized");
+                console.log('AppComponent.ngOnInit: variable is not initialized');
               }
               else
               {
@@ -172,13 +172,13 @@ addtransaction()
 
 parseEPC(epc : string) : TransactionItem
 {
-  let trans : TransactionItem = new TransactionItem();
+  const trans : TransactionItem = new TransactionItem();
 
   // Docs say replaceAll should exist but it fails to compile. VSCode says replace should replace
   // all but it doesn't. I guess something needs to be updated but not sure what!! Maybe
   // the wierd failure of the SCT check is also something to do with versions....
   epc = epc.replace(/\r/g, '');
-  let lines : string[] = epc.split("\n");
+  let const : string[] = epc.split("\n");
 
   // Inexplicably (lines[3] === 'SCT') is giving 'false' when lines[3] is 'SCT'
   if((lines[0] === 'BCD')) // && (lines[3] === 'SCT'))
@@ -203,14 +203,13 @@ parseEPC(epc : string) : TransactionItem
 // paste from the clipboard into a textarea and then read the pasted data. 
 onPaste(event: ClipboardEvent) {
   console.log("onPaste: entry");
-  let clipboardData = event.clipboardData; // || window.clipboardData;
-  let epc = clipboardData.getData('text');  
-  
-  let txn : TransactionItem = this.parseEPC(epc);
+  const clipboardData = event.clipboardData; // || window.clipboardData;
+  const epc = clipboardData.getData('text');
+  const txn : TransactionItem = this.parseEPC(epc);
   this.txAmount = txn.amount;
   this.txComment = txn.comment;
   this.txType = txn.type;
-  console.log("onPaste: exit");  
+  console.log("onPaste: exit");
 }
 }
 
