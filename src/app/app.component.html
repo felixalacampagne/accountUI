@@ -76,6 +76,9 @@
       </div>          
     </form>
     <button type="button" class="btn btn-default btn-primary" (click)="addtransaction();">Add new transaction</button>            
-    <button type="button" class="btn btn-default btn-primary" (click)="populateFromClipboard();">Fill From Clipboard</button>            
+    
+    <div class="input-group input-group-sm mb-3">
+      <textarea ng-model="pastearea" (paste)="onPaste($event)" placeholder="Paste QR EPC data here..."></textarea>    
+    </div>
   </div>
 </div>

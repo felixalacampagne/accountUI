@@ -170,24 +170,18 @@ addtransaction()
   this.addTransactionToDB(newent); 
 }
 
-populateFromClipboard()
-{
-  console.log("populateFromClipboard: entry");
-  let epc = this.readClipboard();
-  let txn : TransactionItem = this.parseEPC(epc);
-  this.txAmount = txn.amount;
-  this.txComment = txn.comment;
-  this.txType = txn.type;
-  console.log("populateFromClipboard: exit");
-
-}
-
 parseEPC(epc : string) : TransactionItem
 {
 let trans : TransactionItem = new TransactionItem();
+
+// Docs say replaceAll should exist but it fails to compile. VSCode sayss replace should replace
+// all but it doesn't. I guess something needs to be updated but not  sure what!!Maybe
+// the wierd failure of the SCT check is also something to do with versions....
+epc = epc.replace(/\r/g, '');
 let lines : string[] = epc.split("\n");
 
-  if((lines[0] === 'BCD') && (lines[3] === 'SCT'))
+  // Inexplicably (lines[3] === 'SCT') is giving 'false' when lines[3] is 'SCT'
+  if((lines[0] === 'BCD')) // && (lines[3] === 'SCT'))
   {
     // Name Comment (Account)
     trans.comment = lines[5] + " " + lines[9] + lines[10] + " " + lines[6];
@@ -196,16 +190,37 @@ let lines : string[] = epc.split("\n");
   }
   else
   {
+    console.log('Lines 0: [' + lines[0] + "] = " + (lines[0] === 'BCD'));
+
+    
+    console.log('Lines 3: [' + lines[3] + "] = " + (lines[3] === 'SCT'));
     console.log("parseEPC: invalid epc string: " + epc);
   }
   return trans;
 }
 
-readClipboard() : string 
-{
-  // let clip : string = "BCD\n002\n1\nSCT\n\nNAME\nBE11222233334444\nEUR999.99\n\n\nStructured\nBeneToOrigIgnored\n";
-  let clip : string = "BCD\n002\n1\nSCT\n\nNAME\nBE11222233334444\nEUR999.99\n\nFreeFormat\n\nBeneToOrigIgnored\n";
-  return clip;
+// So once again ease and convenience of use is well and truely shafted by 'security' which makes
+// reading the clipboard from the browser effectively impossible, especially for the primary target
+// browser, ie. iphone safari. In the absence of any other solution for now I will have to manually
+// paste from the clipboard into a textarea and then read the pasted data. This method therefore
+// assumes the data has been pasted... actually I suppose this could be done as some sort of event...
+// readClipboard() : string 
+// {
+//   // let clip : string = "BCD\n002\n1\nSCT\n\nNAME\nBE11222233334444\nEUR999.99\n\n\nStructured\nBeneToOrigIgnored\n";
+//   let clip : string = "BCD\n002\n1\nSCT\n\nNAME\nBE11222233334444\nEUR999.99\n\nFreeFormat\n\nBeneToOrigIgnored\n";
+//   return clip;
+// }
+
+onPaste(event: ClipboardEvent) {
+  console.log("onPaste: entry");
+  let clipboardData = event.clipboardData; // || window.clipboardData;
+  let epc = clipboardData.getData('text');  
+  
+  let txn : TransactionItem = this.parseEPC(epc);
+  this.txAmount = txn.amount;
+  this.txComment = txn.comment;
+  this.txType = txn.type;
+  console.log("onPaste: exit");  
 }
 }
 
