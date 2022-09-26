@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
-import {Http, Response} from "@angular/http";
+import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
-import 'rxjs/add/operator/map';
+import {map} from 'rxjs/operators';
 import {environment} from '../../environments/environment';
 import { AccountItem } from '../model/accountitem.model';
 import { TransactionItem } from '../model/transaction.model';
@@ -13,7 +13,7 @@ export class AccountService
     private listaccsvc : string = "/accountAPI/listaccount.php";
     private listtxnsvc : string = "/accountAPI/listtransaction.php?accid=";
     private addtxnsvc : string = "/accountAPI/addtransaction.php";
-    constructor(private http : Http)
+    constructor(private http : HttpClient)
     {
         this.serverhost = environment.accountapi_host;
         console.log("Account API server host: " + this.serverhost);
@@ -25,7 +25,7 @@ export class AccountService
         url = this.serverhost + this.listaccsvc;
         // The account items are returned wrapped in an array named accounts
         console.log("getAccount API URL: " + url);
-        return this.http.get(url).map(res => res.json().accounts);    
+        return this.http.get(url).pipe( map((res:any) => res.accounts) );    
     }
 
     getTransactions(a : AccountItem) : Observable<TransactionItem[]>
@@ -33,7 +33,7 @@ export class AccountService
         let url : string;
         url = this.serverhost + this.listtxnsvc + a.id;
         // The items are returned wrapped in an array named transactions
-        return this.http.get(url).map(res => res.json().transactions);
+        return this.http.get(url).pipe( map((res:any) => res.transactions));
 
     }
 
@@ -45,6 +45,6 @@ export class AccountService
         json = JSON.stringify(txn);
         url = this.serverhost + this.addtxnsvc;
         console.log("addTransaction: POSTing to " + url + ": " + json);
-        return this.http.post(url, json);
+        return this.http.post<Response>(url, json);
     }
 }

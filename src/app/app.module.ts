@@ -1,12 +1,12 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import {HttpModule} from '@angular/http';
 import { FormsModule } from '@angular/forms';
 import { DatePipe } from '@angular/common';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 
 import { AppComponent } from './app.component';
 import {AccountService} from '../shared/service/account.service';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -14,9 +14,9 @@ import {AccountService} from '../shared/service/account.service';
   ],
   imports: [
     BrowserModule,
-    HttpModule,
+    HttpClientModule,
     FormsModule,
-    NgbModule.forRoot() 
+    NgbModule 
   ],
   providers: [AccountService, DatePipe],
   bootstrap: [AppComponent]

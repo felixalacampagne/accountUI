@@ -19,20 +19,20 @@ import {TransactionItem} from '../shared/model/transaction.model';
 })
 export class AppComponent implements OnInit {
 
-modalReference: NgbModalRef;
+  modalReference: NgbModalRef | undefined;
 
   title = 'app';
-  accounts: AccountItem[];
-  transactions: TransactionItem[];
-  private activeaccount: AccountItem = null;
-  public submitted: boolean;
-  public defaultdate: string;
-  envName: string;
+  accounts: AccountItem[] = [];
+  transactions: TransactionItem[] = [];
+  activeaccount: AccountItem = new AccountItem();
+  public submitted: boolean = false;
+  public defaultdate: string = '';
+  envName: string = '';
   txDate: NgbDateStruct;
   txType: string;
-  txComment: string;
-  txAmount: string;
-  closeResult: string;
+  txComment: string = '';
+  txAmount: string = '';
+  closeResult: string = '';
   constructor(private accountService: AccountService,
     private cd: ChangeDetectorRef,
     private datePipe: DatePipe,
@@ -48,7 +48,7 @@ modalReference: NgbModalRef;
   }
 
 
-  open(content) {
+  open(content: any) {
     // this.modalReference = this.modalService.open(content, {size:'sm'});
     this.modalReference = this.modalService.open(content);
     this.modalReference.result.then((result) => {
@@ -160,7 +160,11 @@ addtransaction()
   newent.accid = this.activeaccount.id;
   newent.amount = this.txAmount;
   newent.comment = this.txComment;
-  newent.date = this.datePipe.transform(d, 'dd/MM/yyyy');
+  
+  // With new Typescript cannot just assign return value to a string!
+  // Using ternary operator is too clumsy for dealing with the return from a function
+  // Apparently the '??' means use the result unless it's undefined or null and then use the value after the ??
+  newent.date = this.datePipe.transform(d, 'dd/MM/yyyy') ?? '';
   newent.type = this.txType;
 
   console.log("Date: " + newent.date);
@@ -204,11 +208,14 @@ parseEPC(epc : string) : TransactionItem
 onPaste(event: ClipboardEvent) {
   console.log("onPaste: entry");
   const clipboardData = event.clipboardData; // || window.clipboardData;
-  const epc = clipboardData.getData('text');
-  const txn : TransactionItem = this.parseEPC(epc);
-  this.txAmount = txn.amount;
-  this.txComment = txn.comment;
-  this.txType = txn.type;
+  if(clipboardData !== null)
+  {
+    const epc = clipboardData.getData('text');
+    const txn : TransactionItem = this.parseEPC(epc);
+    this.txAmount = txn.amount;
+    this.txComment = txn.comment;
+    this.txType = txn.type;
+    }
   console.log("onPaste: exit");
 }
 }
