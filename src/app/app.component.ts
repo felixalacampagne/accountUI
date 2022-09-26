@@ -177,11 +177,11 @@ parseEPC(epc : string) : TransactionItem
   // Docs say replaceAll should exist but it fails to compile. VSCode says replace should replace
   // all but it doesn't. I guess something needs to be updated but not sure what!! Maybe
   // the wierd failure of the SCT check is also something to do with versions....
-  epc = epc.replace(/\r/g, '');
-  let const : string[] = epc.split("\n");
+  epc = epc.replaceAll('\r', ''); //replace(/\r/g, '');
+  const lines: string[] = epc.split("\n");
 
   // Inexplicably (lines[3] === 'SCT') is giving 'false' when lines[3] is 'SCT'
-  if((lines[0] === 'BCD')) // && (lines[3] === 'SCT'))
+  if((lines[0] === 'BCD') && (lines[3] === 'SCT'))
   {
     // Name Comment (Account)
     trans.comment = lines[5] + " " + lines[9] + lines[10] + " " + lines[6];
@@ -192,7 +192,7 @@ parseEPC(epc : string) : TransactionItem
   {
     console.log('Lines 0: [' + lines[0] + "] = " + (lines[0] === 'BCD'));
     console.log('Lines 3: [' + lines[3] + "] = " + (lines[3] === 'SCT'));
-    console.log("parseEPC: invalid epc string: " + epc);
+    console.log('parseEPC: invalid epc string: ' + epc);
   }
   return trans;
 }
