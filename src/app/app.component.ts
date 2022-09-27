@@ -32,6 +32,7 @@ export class AppComponent implements OnInit {
   txType: string;
   txComment: string = '';
   txAmount: string = '';
+  txPastearea: string = '';
   closeResult: string = '';
   constructor(private accountService: AccountService,
     private cd: ChangeDetectorRef,
@@ -136,9 +137,10 @@ console.log("AppComponent.addTransactionToDB: Starting");
             this.getTransactions(this.activeaccount);
             // Reset amount to prevent double entry
             this.txAmount = '';
+            this.txPastearea = '';
             },
        err=>{
-            console.log("AppComponent.addTransactionToDB: An error occured during getTransactions subscribe" + err);
+            console.log("AppComponent.addTransactionToDB: An error occured during getTransactions subscribe:" + JSON.stringify(err));
             } ,
         ()=>{console.log("AppComponent.addTransactionToDB: getTransactions loading completed");}
     );

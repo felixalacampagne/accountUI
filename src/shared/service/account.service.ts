@@ -37,7 +37,7 @@ export class AccountService
 
     }
 
-    addTransaction(txn : TransactionItem) : Observable<Response>
+    addTransaction(txn : TransactionItem) // : Observable<Response>
     {
         let json : string;
         let url : string;
@@ -45,6 +45,14 @@ export class AccountService
         json = JSON.stringify(txn);
         url = this.serverhost + this.addtxnsvc;
         console.log("addTransaction: POSTing to " + url + ": " + json);
-        return this.http.post<Response>(url, json);
+
+        // To prevent response being parsed as JSON must use responseType: 'text'. 
+        // When responseType: 'text' is used the return value must not be a generic
+        // type, ie. Observable<Response>, otherwise a incomprehensible compiler error
+        // is generated.
+        //
+        // Now for the first time the clearing of the transaction entry screen is
+        // actually working!!!
+        return this.http.post(url, json, { responseType: 'text' });
     }
 }
