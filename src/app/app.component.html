@@ -80,5 +80,7 @@
     <div>
       <textarea [(ngModel)]="txPastearea" (paste)="onPaste($event)" placeholder="Paste QR EPC data here..."></textarea>    
     </div>
+    <button type="button" class="btn btn-default btn-primary" (click)="doScan();">Scan QR code</button>            
+    <div id="reader" width="300px"></div>
   </div>
 </div>

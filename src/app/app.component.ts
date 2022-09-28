@@ -11,6 +11,8 @@ import { mmddyyyNgbDateParserFormatter } from '../shared/datepickformatter';
 import {AccountService} from '../shared/service/account.service';
 import {AccountItem} from '../shared/model/accountitem.model';
 import {TransactionItem} from '../shared/model/transaction.model';
+import { Html5QrcodeScanner } from 'html5-qrcode';
+import { Html5QrcodeResult } from 'html5-qrcode/esm/core';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -34,6 +36,7 @@ export class AppComponent implements OnInit {
   txAmount: string = '';
   txPastearea: string = '';
   closeResult: string = '';
+  html5QrcodeScanner: Html5QrcodeScanner | undefined; // Only defined while a scan is being performed
   constructor(private accountService: AccountService,
     private cd: ChangeDetectorRef,
     private datePipe: DatePipe,
@@ -50,7 +53,6 @@ export class AppComponent implements OnInit {
 
 
   open(content: any) {
-    // this.modalReference = this.modalService.open(content, {size:'sm'});
     this.modalReference = this.modalService.open(content);
     this.modalReference.result.then((result) => {
       this.closeResult = `Closed with: ${result}`;
@@ -178,6 +180,7 @@ addtransaction()
 
 parseEPC(epc : string) : TransactionItem
 {
+  console.log('parseEPC: entry');
   const trans : TransactionItem = new TransactionItem();
 
   // Docs say replaceAll should exist but it fails to compile. VSCode says replace should replace
@@ -193,6 +196,7 @@ parseEPC(epc : string) : TransactionItem
     trans.comment = lines[5] + " " + lines[9] + lines[10] + " " + lines[6];
     trans.amount = lines[7].substr(3);
     trans.type = 'QRMP';
+    console.log('parseEPC: successfully parsed to transaction');
   }
   else
   {
@@ -200,6 +204,7 @@ parseEPC(epc : string) : TransactionItem
     console.log('Lines 3: [' + lines[3] + "] = " + (lines[3] === 'SCT'));
     console.log('parseEPC: invalid epc string: ' + epc);
   }
+  console.log('parseEPC: exit');
   return trans;
 }
 
@@ -217,8 +222,51 @@ onPaste(event: ClipboardEvent) {
     this.txAmount = txn.amount;
     this.txComment = txn.comment;
     this.txType = txn.type;
-    }
+  }
   console.log("onPaste: exit");
+}
+
+
+onScanSuccess(decodedText: string, decodedResult: Html5QrcodeResult) {
+  // handle the scanned code as you like, for example:
+  console.log('onScanSuccess: entry');
+  if(this.html5QrcodeScanner != undefined) {
+    console.log('onScanSuccess: stopping scanner');
+    this.html5QrcodeScanner.clear();
+    this.html5QrcodeScanner = undefined;
+  }  
+  console.log('onScanSuccess: Parsing result ' + decodedText);
+  const txn : TransactionItem = this.parseEPC(decodedText);
+  console.log('onScanSuccess: setting transaction details');
+  this.txAmount = txn.amount;
+  this.txComment = txn.comment;
+  this.txType = txn.type;
+  console.log('onScanSuccess: exit');
+}
+
+onScanFailure(error: any) {
+  // handle scan failure, usually better to ignore and keep scanning.
+  // for example:
+  //console.warn(`Code scan error = ${error}`);
+}
+
+doScan() {
+
+  // Second parameter should be { fps: 10, qrbox: {width: 250, height: 250} }, but it doesn't compile
+  // and there doesn't appear to be anyway to create an object of the type required
+  // let conf: Html5QrcodeScannerConfig = { fps: 10, qrbox: {width: 250, height: 250} supportedScanTypes:[] };
+  this.html5QrcodeScanner = new Html5QrcodeScanner(
+    "reader",
+    { fps: 10, qrbox: {width: 250, height: 250}, supportedScanTypes: [], rememberLastUsedCamera: true },
+    /* verbose= */ false);
+
+  // Could not get it to work. It appeared to execute the fist console.log of onScanSuccess and then vanish
+  // literally without trace. Luckily I remembered something about 'this' getting lost especially in callbacks.
+  // Eventually tracked the 'bind' thing down and whoopee it works now! It's a bit tricky to use with a PC camera
+  // and an image on the iPhone or a QR code displayed on the PC. But it's really intended to use on the iPhone
+  // where it probably wont actually work!
+  let callback = (this.onScanSuccess).bind(this);
+  this.html5QrcodeScanner.render(callback,  this.onScanFailure);
 }
 }
 
