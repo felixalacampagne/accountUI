@@ -268,5 +268,10 @@ doScan() {
   let callback = (this.onScanSuccess).bind(this);
   this.html5QrcodeScanner.render(callback,  this.onScanFailure);
 }
+
+isTransactions() : boolean {
+  return this.transactions.length > 0;
+}
+
 }
 

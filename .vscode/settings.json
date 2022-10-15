@@ -1,0 +1,6 @@
+{
+    "editor.hover.delay": 1500,
+    "html.autoClosingTags": false,
+    "html.autoCreateQuotes": false,
+    "editor.autoClosingBrackets": "never"
+}

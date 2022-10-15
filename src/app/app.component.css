@@ -1,1 +1,28 @@
 .modal-open { position: fixed; }
+
+/*
+  Aborted attempt to get the QR scanner to overlay the transaction entry form.
+  Could not get it to work, the form fields always remained visible through
+  the scanner component. Nothing made a difference so I gave up. Will eventually
+  try to make the scanner into a standalone component that can be invoked like
+  a popup modal form which might solve the problem.
+*/
+#txncontainer {
+  position: relative;
+  left: 0px;
+  top: 0px;
+  /* background: #7dc765; */
+}
+
+#qrreadercontainer,
+#txnform {
+  width: 100%;
+  /* height: 100%; */
+  /* position: absolute; */
+  /* top: 0; */
+  /* left: 0; */
+}
+#qrreadercontainer {
+  /* z-index: 1000000000; */
+  /* opacity: 0; */
+}

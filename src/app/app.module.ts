@@ -7,10 +7,12 @@ import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import { AppComponent } from './app.component';
 import {AccountService} from '../shared/service/account.service';
 import { HttpClientModule } from '@angular/common/http';
+import { QrscannerComponent } from './qrscanner/qrscanner.component';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    QrscannerComponent
   ],
   imports: [
     BrowserModule,
