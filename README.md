@@ -48,3 +48,12 @@ Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To u
 ## Further help
 
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+
+## vsCode settings
+
+Things to change to make vsCode vaugely civilized:
+
+editor.suggestOnTriggerCharacters  - stops it constantly popping up things while you are typing and then randomly
+selecting shirt from the list.
+
+Bunch of delay values need to be set to prevent it from constantly popping up things when the cursor is moved around
