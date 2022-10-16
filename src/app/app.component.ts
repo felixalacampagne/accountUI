@@ -100,54 +100,54 @@ export class AppComponent implements OnInit {
 
 getTransactions(acc : AccountItem)
 {
-console.log("AppComponent.getTransactions: Starting");
-    this.accountService.getTransactions(acc).subscribe(
-       res=>{
-              this.transactions = res;
-              //debugger;
-              if(!this.transactions)
-              {
-                console.log("AppComponent.getTransactions: variable is not initialized");
-              }
-              else
-              {
-                console.log("AppComponent.getTransactions: transactions contains " + this.transactions.length + " items.");
-                let t : TransactionItem=this.transactions[this.transactions.length-1]
-                console.log("AppComponent.getTransactions: last transaction " + t.comment + ", " +t.amount);
-                // Fingers crossed this causes an update of the displayed transaction list, which
-                // does not happen automatically when a new transaction is added
-                this.cd.markForCheck();
-              }
-            },
-       err=>{
-            console.log("AppComponent.getTransactions: An error occured during getTransactions subscribe" + err);
-            } ,
-        ()=>{console.log("AppComponent.getTransactions: getTransactions loading completed");}
-    );
+  console.log("AppComponent.getTransactions: Starting");
+  this.accountService.getTransactions(acc).subscribe(
+      res=>{
+            this.transactions = res;
+            //debugger;
+            if(!this.transactions)
+            {
+              console.log("AppComponent.getTransactions: variable is not initialized");
+            }
+            else
+            {
+              console.log("AppComponent.getTransactions: transactions contains " + this.transactions.length + " items.");
+              let t : TransactionItem=this.transactions[this.transactions.length-1]
+              console.log("AppComponent.getTransactions: last transaction " + t.comment + ", " +t.amount);
+              // Fingers crossed this causes an update of the displayed transaction list, which
+              // does not happen automatically when a new transaction is added
+              this.cd.markForCheck();
+            }
+          },
+      err=>{
+          console.log("AppComponent.getTransactions: An error occured during getTransactions subscribe" + err);
+          } ,
+      ()=>{console.log("AppComponent.getTransactions: getTransactions loading completed");}
+  );
 
-    console.log("AppComponent.getTransactions:Finished");
-    this.activeaccount = acc;
+  console.log("AppComponent.getTransactions:Finished");
+  this.activeaccount = acc;
 }
 
 addTransactionToDB(txn : TransactionItem)
 {
-console.log("AppComponent.addTransactionToDB: Starting");
-    this.accountService.addTransaction(txn).subscribe(
-       res=>{
-            console.log("AppComponent.addTransactionToDB: Response: " + res);
-            // Must wait for add to complete before loading new transaction list
-            this.getTransactions(this.activeaccount);
-            // Reset amount to prevent double entry
-            this.txAmount = '';
-            this.txPastearea = '';
-            },
-       err=>{
-            console.log("AppComponent.addTransactionToDB: An error occured during getTransactions subscribe:" + JSON.stringify(err));
-            } ,
-        ()=>{console.log("AppComponent.addTransactionToDB: getTransactions loading completed");}
-    );
+  console.log("AppComponent.addTransactionToDB: Starting");
+  this.accountService.addTransaction(txn).subscribe(
+      res=>{
+          console.log("AppComponent.addTransactionToDB: Response: " + res);
+          // Must wait for add to complete before loading new transaction list
+          this.getTransactions(this.activeaccount);
+          // Reset amount to prevent double entry
+          this.txAmount = '';
+          this.txPastearea = '';
+          },
+      err=>{
+          console.log("AppComponent.addTransactionToDB: An error occured during getTransactions subscribe:" + JSON.stringify(err));
+          } ,
+      ()=>{console.log("AppComponent.addTransactionToDB: getTransactions loading completed");}
+  );
 
-    console.log("AppComponent.addTransactionToDB:Finished");
+  console.log("AppComponent.addTransactionToDB:Finished");
 }
 
 
@@ -194,7 +194,7 @@ parseEPC(epc : string) : TransactionItem
   {
     // Name Comment (Account)
     trans.comment = lines[5] + " " + lines[9] + lines[10] + " " + lines[6];
-    trans.amount = lines[7].substr(3);
+    trans.amount = lines[7].substring(3);
     trans.type = 'QRMP';
     console.log('parseEPC: successfully parsed to transaction');
   }
@@ -251,20 +251,15 @@ onScanFailure(error: any) {
 }
 
 doScan() {
-
-  // Second parameter should be { fps: 10, qrbox: {width: 250, height: 250} }, but it doesn't compile
-  // and there doesn't appear to be anyway to create an object of the type required
-  // let conf: Html5QrcodeScannerConfig = { fps: 10, qrbox: {width: 250, height: 250} supportedScanTypes:[] };
   this.html5QrcodeScanner = new Html5QrcodeScanner(
     "reader",
     { fps: 10, qrbox: {width: 250, height: 250}, supportedScanTypes: [], rememberLastUsedCamera: true },
     /* verbose= */ false);
 
-  // Could not get it to work. It appeared to execute the fist console.log of onScanSuccess and then vanish
+  // Could not get it to work. It appeared to execute the first console.log of onScanSuccess and then vanish
   // literally without trace. Luckily I remembered something about 'this' getting lost especially in callbacks.
   // Eventually tracked the 'bind' thing down and whoopee it works now! It's a bit tricky to use with a PC camera
-  // and an image on the iPhone or a QR code displayed on the PC. But it's really intended to use on the iPhone
-  // where it probably wont actually work!
+  // and an image on the iPhone but seems to work OK on the iPhone apart from always needing to ask permission.
   let callback = (this.onScanSuccess).bind(this);
   this.html5QrcodeScanner.render(callback,  this.onScanFailure);
 }

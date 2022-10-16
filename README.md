@@ -2,25 +2,28 @@
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 14.2.3.
 
+26-Sep-2022
 It was originally started with Angular 5 but it proved impossible to figure out what changes were needed to get
-that version to run the 'ng build' when Angular was updated to 14. The the only solution was to create a new project from scratch
-and copy the actual code from the Angular 5 version into the new project. The builder at least ran on the new project, all that
-was left to do was fix all the bugs which suddenly appeared and the previously successful compiling code.
+that version to run the 'ng build' when Angular was updated to 14. The the only solution was to create a new project from scratch and copy the actual code from the Angular 5 version into the new project. The builder at least ran on the new project, all that was left to do was fix all the bugs which suddenly appeared in the previously successful compiling code.
 
-The end result of a few days of work was finally a compiling version of the same code. Hopefully this pain wont be needed again 
-for a couple of years.
+The end result of a few days of work was finally a compiling version of the same code. Hopefully this pain wont be needed again for a couple of years.
 
-There is at least one new piece of functionality: a formatted EPC,. mobile payment, text can now be parsed into a transaction. 
-Such texts are usually seen as QR codes so a QR code can be used to make a payment via the banking app and the same QR code can
-be used to make the entry into Account. It's a bit clumsy as there is no way to access the clipboard and unfortunately the iPhone
-'Scan Text' option which appears sometimes is not capable of decoding a QR.
+One bug was fixed during to port to Angular 14: the reason for the failure to clear the transaction fields and update 
+the transaction list post submission was discovered - failure to parse the non-json response as json!! Took a while to figure out how to stop the json parsing but it now seems to work as expected - finally!
 
-It would be really nice to directly invoke a QR reader from the web application. It might be possible to do this using
-this: http://github.com/mebjas/html5-qrcode. Certainly worth a look sometime.
+There is at least one new piece of functionality: a formatted EPC,. mobile payment, text can now be parsed into a transaction. Such texts are usually seen as QR codes so a QR code can be used to make a payment via the banking app and the same QR code can be used to make the entry into Account. It's a bit clumsy as there is no way to access the clipboard and unfortunately the iPhone 'Scan Text' option which appears sometimes is not capable of decoding a QR.
 
-One bug was fixed during to port to ANgular 14: the reason for the failure to clear the transaction fields and update 
-the transaction list post submission was discovered - failure to parse the non-json response as json!! Took a while to figure
-out how to stop the json parsing but it now seems to work as expected - finally!
+16-Oct-2022
+QR reader can be invoked directly from the account web page. This is made possible by: 
+http://github.com/mebjas/html5-qrcode. 
+The behaviour is a bit crude, even after hours and hours of forking around with CSS, however it is certainly usable and definitely better than having to paste the result of an external scan into a text field. The downside is that the page must be served from a HTTPS server. Luckily my server already had an HTTPS version which account seems to work with, even on the iPhone using the VPN.
+
+TODO: Make the scanner automatically request the permissions if necessary. It's a stupid unnecessary action which seems to be required each time the page is loaded - multiple uses of the scanner in the same 'session' do not require the permissions to be granted each time.
+
+TODO: Close and remove the scanner when no scan is to be performed. Only way to do this at the moment is to reload the page.
+
+TODO: Make the scanner into a component which can be displayed floating over the page like a dialog, with the page darkened. This is a real 'nice to have' since I managed to get some sort of control over the position of the scanner in the main page without messing up everything else.
+
 
 ## Development server
 
@@ -32,7 +35,7 @@ Run `ng generate component component-name` to generate a new component. You can 
 
 ## Build
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+Run `ng build --configuration production` to build the project for installation on webserver. The build artifacts will be stored in the `dist/` directory.
 
 ## Running unit tests
 
