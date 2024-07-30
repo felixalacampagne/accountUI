@@ -37,6 +37,16 @@ export class AppComponent implements OnInit {
   txPastearea: string = '';
   closeResult: string = '';
   html5QrcodeScanner: Html5QrcodeScanner | undefined; // Only defined while a scan is being performed
+  public txnTypes: string[] = [
+    "BC",
+    "AWAL",
+    "ITFR",
+    "INET",
+    "PPAL",
+    "CARD",
+    "QRMP",
+    "DDBT"
+  ];
   constructor(private accountService: AccountService,
     private cd: ChangeDetectorRef,
     private datePipe: DatePipe,
