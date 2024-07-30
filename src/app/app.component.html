@@ -48,6 +48,7 @@
               <div class="input-group-prepend">
                 <span class="input-group-text" id="lbdate">Date</span>
               </div>
+              <!-- TODO: enable navigation backwards and forwards as it is not possible to add an entry for the previous/next month  -->
               <input ngbDatepicker #dt="ngbDatepicker" [(ngModel)]="txDate" name="txDate" id="txDate" type="text" class="form-control-date form-control form-control-sm" placeholder="DD/MM/YYYY">
               <div class="input-group-append">
                 <button class="btn btn-outline-secondary" (click)="dt.toggle()" type="button">
@@ -60,8 +61,10 @@
                 <div class="input-group-prepend">
                   <span class="input-group-text" id="lbType">Type</span>
                 </div>
+                <!-- TODO: Load options from code to allow update without recompile -->
                 <select class="form-control form-control-sm" [(ngModel)]="txType" name="txType" id="txType">
                     <option>BC</option>
+                    <option>AWAL</option>
                     <option>ITFR</option>
                     <option>INET</option>
                     <option>PPAL</option>
